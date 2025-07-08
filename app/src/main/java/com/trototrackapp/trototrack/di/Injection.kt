@@ -26,10 +26,8 @@ object Injection {
     }
 
     fun provideScanRepository(context: Context): ScanRepository {
-        val userPreference = UserPreference.getInstance(context)
-        val tokenFlow = userPreference.tokenFlow
-        val apiService = ApiConfig.getApiService(tokenFlow)
-        return ScanRepository.getInstance(apiService)
+        val scanApiService = ApiConfig.getScanApiService()
+        return ScanRepository.getInstance(scanApiService)
     }
 
     fun provideProfileRepository(context: Context): ProfileRepository {

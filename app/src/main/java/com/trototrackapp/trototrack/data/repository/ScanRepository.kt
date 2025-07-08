@@ -4,16 +4,16 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.liveData
 import com.trototrackapp.trototrack.data.ResultState
 import com.trototrackapp.trototrack.data.remote.response.ScanResponse
-import com.trototrackapp.trototrack.data.remote.retrofit.ApiService
+import com.trototrackapp.trototrack.data.remote.retrofit.ScanApiService
 import okhttp3.MultipartBody
 
-class ScanRepository(private val apiService: ApiService) {
+class ScanRepository(private val scanApiService: ScanApiService) {
 
     fun scan(image: MultipartBody.Part): LiveData<ResultState<ScanResponse>> =
         liveData {
             emit(ResultState.Loading)
             try {
-                val response = apiService.scan(image)
+                val response = scanApiService.scan(image)
                 if (response.isSuccessful) {
                     emit(ResultState.Success(response.body()!!))
                 } else {
@@ -27,11 +27,13 @@ class ScanRepository(private val apiService: ApiService) {
     companion object {
         @Volatile
         private var instance: ScanRepository? = null
+
         fun getInstance(
-            apiService: ApiService,
+            scanApiService: ScanApiService,
         ): ScanRepository =
             instance ?: synchronized(this) {
-                instance ?: ScanRepository(apiService)
+                instance ?: ScanRepository(scanApiService)
             }.also { instance = it }
     }
+
 }

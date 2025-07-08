@@ -17,7 +17,8 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
-        buildConfigField("String","BASE_URL", "\"https://trototrack-859835962101.asia-southeast2.run.app//\"")
+        buildConfigField("String","BASE_URL", "\"https://troto.aninyan.com/\"")
+        buildConfigField("String", "BASE_URL_SCAN", "\"https://scan.aninyan.com/\"")
     }
 
     buildTypes {

@@ -11,7 +11,28 @@ import kotlinx.coroutines.runBlocking
 import okhttp3.Interceptor
 
 object ApiConfig {
+
     fun getApiService(tokenFlow: Flow<String?>): ApiService {
+        val client = provideAuthorizedClient(tokenFlow)
+        val retrofit = Retrofit.Builder()
+            .baseUrl(BuildConfig.BASE_URL)
+            .addConverterFactory(GsonConverterFactory.create())
+            .client(client)
+            .build()
+        return retrofit.create(ApiService::class.java)
+    }
+
+    fun getScanApiService(): ScanApiService {
+        val client = provideUnauthenticatedClient()
+        val retrofit = Retrofit.Builder()
+            .baseUrl(BuildConfig.BASE_URL_SCAN)
+            .addConverterFactory(GsonConverterFactory.create())
+            .client(client)
+            .build()
+        return retrofit.create(ScanApiService::class.java)
+    }
+
+    private fun provideAuthorizedClient(tokenFlow: Flow<String?>): OkHttpClient {
         val loggingInterceptor = HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY)
         val authInterceptor = Interceptor { chain ->
             val req = chain.request()
@@ -21,15 +42,18 @@ object ApiConfig {
                 .build()
             chain.proceed(requestHeaders)
         }
-        val client: OkHttpClient = OkHttpClient.Builder()
+
+        return OkHttpClient.Builder()
             .addInterceptor(loggingInterceptor)
             .addInterceptor(authInterceptor)
             .build()
-        val retrofit = Retrofit.Builder()
-            .baseUrl(BuildConfig.BASE_URL)
-            .addConverterFactory(GsonConverterFactory.create())
-            .client(client)
+    }
+
+    private fun provideUnauthenticatedClient(): OkHttpClient {
+        val loggingInterceptor = HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY)
+
+        return OkHttpClient.Builder()
+            .addInterceptor(loggingInterceptor)
             .build()
-        return retrofit.create(ApiService::class.java)
     }
 }

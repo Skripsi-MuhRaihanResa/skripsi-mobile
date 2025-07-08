@@ -76,12 +76,6 @@ interface ApiService {
     @GET("profile")
     suspend fun getUserProfile(): Response<GetProfileResponse>
 
-    @Multipart
-    @POST("scan")
-    suspend fun scan(
-        @Part image: MultipartBody.Part,
-    ): Response<ScanResponse>
-
     @POST("reports/{id}/upvote")
     suspend fun voteReport(@Path("id") id: String): Response<VoteReportResponse>
 
